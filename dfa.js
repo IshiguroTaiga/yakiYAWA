@@ -143,9 +143,7 @@ function renderStateChips(result, useU, useD, useS) {
   const s = result.finalState;
   const labels = [];
 
-  if (s === 'qt') {
-    labels.push({ text: 'qt — trap', cls: 'trap-chip' });
-  } else if (s === 'qacc') {
+    if (s === 'qacc') {
     if (useU) labels.push({ text: 'U met', cls: 'active' });
     if (useD) labels.push({ text: 'D met', cls: 'active' });
     if (useS) labels.push({ text: 'S met', cls: 'active' });
@@ -178,10 +176,7 @@ function renderBanner(result, pw, minLen, useU, useD, useS, useLen) {
   const l = !useLen || pw.length >= minLen;
   const allMet = u && d && s && l;
 
-  if (result.inTrap) {
-    resultBanner.className = 'banner banner-trap';
-    resultBanner.textContent = 'TRAPPED — invalid character sequence (dead state qt)';
-  } else if (noRules || allMet) {
+    if (noRules || allMet) {
     resultBanner.className = 'banner banner-accept';
     resultBanner.textContent = 'ACCEPTED — password is valid';
   } else {
@@ -219,7 +214,7 @@ function renderTrace(trace) {
     return;
   }
 
-  const typeNames = { U: 'uppercase', D: 'digit', S: 'special', L: 'lowercase→trap' };
+  const typeNames = { U: 'uppercase', D: 'digit', S: 'special', L: 'lowercase' };
   traceOutput.innerHTML = trace.map((step, i) => {
     const toClass = step.to === 'qt' ? 'is-trap' : step.to === 'qacc' ? 'is-accept' : '';
     const displayChar = step.char === ' ' ? '(space)' : step.char;
