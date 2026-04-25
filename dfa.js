@@ -33,13 +33,13 @@ function classify(char) {
 
 // The DFA transition function: δ(state, inputType) → nextState
 const DELTA = {
-  q0:   { U: 'q1',   D: 'q2',   S: 'q3',   L: 'qt'   },
-  q1:   { U: 'q1',   D: 'q4',   S: 'q5',   L: 'qt'   },
-  q2:   { U: 'q4',   D: 'q2',   S: 'q6',   L: 'qt'   },
-  q3:   { U: 'q5',   D: 'q6',   S: 'q3',   L: 'qt'   },
-  q4:   { U: 'q4',   D: 'q4',   S: 'qacc', L: 'qt'   },
-  q5:   { U: 'q5',   D: 'qacc', S: 'q5',   L: 'qt'   },
-  q6:   { U: 'qacc', D: 'q6',   S: 'q6',   L: 'qt'   },
+  q0:   { U: 'q1',   D: 'q2',   S: 'q3',   L: 'q0'   }, // ← stay, don't trap
+  q1:   { U: 'q1',   D: 'q4',   S: 'q5',   L: 'q1'   },
+  q2:   { U: 'q4',   D: 'q2',   S: 'q6',   L: 'q2'   },
+  q3:   { U: 'q5',   D: 'q6',   S: 'q3',   L: 'q3'   },
+  q4:   { U: 'q4',   D: 'q4',   S: 'qacc', L: 'q4'   },
+  q5:   { U: 'q5',   D: 'qacc', S: 'q5',   L: 'q5'   },
+  q6:   { U: 'qacc', D: 'q6',   S: 'q6',   L: 'q6'   },
   qacc: { U: 'qacc', D: 'qacc', S: 'qacc', L: 'qacc' },
   qt:   { U: 'qt',   D: 'qt',   S: 'qt',   L: 'qt'   },
 };
