@@ -2,7 +2,7 @@
 
 A password validator built using a **Deterministic Finite Automaton (DFA)** — a project for Automata Theory & Formal Languages.
 
-Live demo → [your-username.github.io/dfa-password-validator](https://your-username.github.io/dfa-password-validator)
+Live demo → https://ishigurotaiga.github.io/yakiYAWA/
 
 ---
 
