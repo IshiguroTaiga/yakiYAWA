@@ -20,8 +20,8 @@ A DFA is defined as a 5-tuple: **M = (Q, Σ, δ, q0, F)**
 
 | Component | Value |
 |-----------|-------|
-| **Q** — states | { q0, q1, q2, q3, q4, q5, q6, qacc, qt } |
-| **Σ** — alphabet | Uppercase, Digit, Special char, Lowercase |
+| **Q** — states | { q0, q1, q2, q3, q4, q5, q6, qacc } |
+| **Σ** — alphabet | Uppercase (U), Digit (D), Special (S), Lowercase (L) |
 | **δ** — transition function | See table below |
 | **q0** — start state | q0 |
 | **F** — accepting states | { qacc } (+ length check) |
@@ -38,33 +38,33 @@ A DFA is defined as a 5-tuple: **M = (Q, Σ, δ, q0, F)**
 | q5 | Has uppercase + special | ✓ | ✗ | ✓ | No |
 | q6 | Has digit + special | ✗ | ✓ | ✓ | No |
 | qacc | All three satisfied | ✓ | ✓ | ✓ | Yes* |
-| **qt** | **Trap/dead state** | — | — | — | **No (forever)** |
 
 > \* qacc only fully accepts if the password also meets the minimum length requirement, checked after the DFA finishes reading.
 
 ### Transition table (δ function)
 
-| State | uppercase | digit | special | lowercase |
-|-------|-----------|-------|---------|-----------|
-| q0 | q1 | q2 | q3 | **qt** |
-| q1 | q1 | q4 | q5 | **qt** |
-| q2 | q4 | q2 | q6 | **qt** |
-| q3 | q5 | q6 | q3 | **qt** |
-| q4 | q4 | q4 | qacc | **qt** |
-| q5 | q5 | qacc | q5 | **qt** |
-| q6 | qacc | q6 | q6 | **qt** |
-| qacc | qacc | qacc | qacc | qacc |
-| **qt** | **qt** | **qt** | **qt** | **qt** |
+Italic entries are **self-loops** — the state does not change.
 
-### The trap/dead state (qt)
+| State | uppercase (U) | digit (D) | special (S) | lowercase (L) |
+|-------|--------------|-----------|-------------|---------------|
+| q0 | q1 | q2 | q3 | *q0* |
+| q1 | *q1* | q4 | q5 | *q1* |
+| q2 | q4 | *q2* | q6 | *q2* |
+| q3 | q5 | q6 | *q3* | *q3* |
+| q4 | *q4* | *q4* | qacc | *q4* |
+| q5 | *q5* | qacc | *q5* | *q5* |
+| q6 | qacc | *q6* | *q6* | *q6* |
+| qacc | *qacc* | *qacc* | *qacc* | *qacc* |
 
-qt is a **non-accepting sink state**. Once the DFA enters qt, no transition can escape it:
+### How lowercase is handled
+
+Lowercase letters are treated as **neutral characters** — they do not advance the DFA toward acceptance, but they do not cause rejection either. Every state loops back to itself on a lowercase input:
 
 ```
-δ(qt, x) = qt   for all input x ∈ Σ
+δ(q, L) = q   for all states q ∈ Q
 ```
 
-In this implementation, qt is triggered when a lowercase letter is read before all 3 requirements are satisfied. This makes the DFA **complete** — every state has a defined transition for every possible input symbol.
+This keeps the DFA **complete** (every state has a defined transition for every input symbol) while allowing real-world passwords like `Hello1!` or `Password9#` to work correctly.
 
 ---
 
@@ -74,7 +74,6 @@ In this implementation, qt is triggered when a lowercase letter is read before a
 - Step-by-step trace of every DFA transition
 - Configurable rules (toggle each requirement on/off)
 - Adjustable minimum password length (1–20)
-- Trap state detection with clear visual feedback
 - State diagram, state table, and transition table all included on the page
 
 ---
@@ -96,8 +95,8 @@ dfa-password-validator/
 No build tools or frameworks needed. Just open the file:
 
 ```bash
-git clone https://github.com/your-username/dfa-password-validator.git
-cd dfa-password-validator
+git clone https://github.com/ishigurotaiga/yakiYAWA.git
+cd yakiYAWA
 open index.html
 ```
 
@@ -111,21 +110,25 @@ Or drag `index.html` into your browser.
 2. Go to your repo → **Settings** → **Pages**
 3. Under "Branch", select `main` and folder `/ (root)`
 4. Click **Save**
-5. Your site will be live at `https://your-username.github.io/dfa-password-validator`
+5. Your site will be live at `https://ishigurotaiga.github.io/yakiYAWA/`
 
 ---
 
-## Example walkthrough
+## Example walkthroughs
 
 Password: `Hello1!`
 
 | Step | Char | Type | From | To |
 |------|------|------|------|----|
 | 1 | H | uppercase | q0 | q1 |
-| 2 | e | lowercase | q1 | **qt** ← TRAPPED |
-| 3–7 | ... | — | qt | qt |
+| 2 | e | lowercase | q1 | q1 ← self-loop |
+| 3 | l | lowercase | q1 | q1 ← self-loop |
+| 4 | l | lowercase | q1 | q1 ← self-loop |
+| 5 | o | lowercase | q1 | q1 ← self-loop |
+| 6 | 1 | digit | q1 | q4 |
+| 7 | ! | special | q4 | **qacc** |
 
-**Result: REJECTED** — lowercase `e` was read before all requirements were met, triggering the trap state.
+**Result: ACCEPTED** (if min length ≤ 7)
 
 ---
 
@@ -141,13 +144,29 @@ Password: `H1!`
 
 ---
 
+Password: `abc123` (no uppercase, no special)
+
+| Step | Char | Type | From | To |
+|------|------|------|------|----|
+| 1 | a | lowercase | q0 | q0 |
+| 2 | b | lowercase | q0 | q0 |
+| 3 | c | lowercase | q0 | q0 |
+| 4 | 1 | digit | q0 | q2 |
+| 5 | 2 | digit | q2 | q2 |
+| 6 | 3 | digit | q2 | q2 |
+
+**Result: REJECTED** — final state q2 is not accepting (missing uppercase and special character)
+
+---
+
 ## Concepts covered
 
 - Deterministic Finite Automata (DFA)
 - Formal definition: 5-tuple (Q, Σ, δ, q0, F)
 - State transitions and transition function δ
+- Self-loops and neutral input symbols
 - Accepting vs non-accepting states
-- Trap/dead states and completeness of a DFA
+- Complete DFA (transition defined for every state-input pair)
 - Real-world application of formal language theory
 
 ---
