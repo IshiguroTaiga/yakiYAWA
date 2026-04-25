@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DFA Password Validator</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="badge">Automata Theory — DFA Project</div>
+      <h1>Password Validator</h1>
+      <p class="subtitle">A Deterministic Finite Automaton that validates passwords by reading each character and transitioning between states.</p>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- VALIDATOR SECTION -->
+    <section class="card" id="validator">
+      <h2>Try it</h2>
+
+      <div class="rules-grid">
+        <label class="rule-toggle">
+          <input type="checkbox" id="r-upper" checked>
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="rule-label">Uppercase letter</span>
+        </label>
+        <label class="rule-toggle">
+          <input type="checkbox" id="r-digit" checked>
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="rule-label">Number (0–9)</span>
+        </label>
+        <label class="rule-toggle">
+          <input type="checkbox" id="r-special" checked>
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="rule-label">Special character</span>
+        </label>
+        <label class="rule-toggle">
+          <input type="checkbox" id="r-len" checked>
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="rule-label">Min length</span>
+        </label>
+      </div>
+
+      <div class="len-row" id="len-row">
+        <span class="rule-label">Minimum length</span>
+        <input type="range" id="min-len" min="1" max="20" value="8">
+        <span id="len-val">8</span>
+      </div>
+
+      <div class="input-wrap">
+        <input type="password" id="pw-input" placeholder="Type your password..." autocomplete="off" spellcheck="false">
+        <button id="show-btn">show</button>
+      </div>
+
+      <div class="state-strip">
+        <span class="strip-label">Current DFA state:</span>
+        <div id="state-chips"></div>
+      </div>
+
+      <div id="result-banner" class="banner banner-idle">waiting for input</div>
+
+      <div class="checks" id="checks"></div>
+    </section>
+
+    <!-- HOW IT WORKS SECTION -->
+    <section class="card" id="how">
+      <h2>How it works</h2>
+      <p>A <strong>Deterministic Finite Automaton (DFA)</strong> is a mathematical model that reads an input string one character at a time and moves between a fixed set of states based on what it reads. At the end, it either accepts or rejects the input.</p>
+      <p>For this password validator, each <strong>state</strong> tracks which requirements have been satisfied so far. Reading a new character may move you to a new state if a new requirement is met.</p>
+
+      <div class="concept-grid">
+        <div class="concept-box">
+          <div class="concept-title">Q — States</div>
+          <div class="concept-desc">{ q0, q1, q2, q3, q4, q5, q6, qacc, qt }</div>
+        </div>
+        <div class="concept-box">
+          <div class="concept-title">Σ — Alphabet</div>
+          <div class="concept-desc">All printable characters (uppercase, digit, special, lowercase)</div>
+        </div>
+        <div class="concept-box">
+          <div class="concept-title">δ — Transition</div>
+          <div class="concept-desc">δ(state, char) → next state</div>
+        </div>
+        <div class="concept-box">
+          <div class="concept-title">q0 — Start state</div>
+          <div class="concept-desc">Begin here. No requirements satisfied yet.</div>
+        </div>
+        <div class="concept-box">
+          <div class="concept-title">qacc — Accept</div>
+          <div class="concept-desc">All 3 requirements met + length check.</div>
+        </div>
+        <div class="concept-box">
+          <div class="concept-title">qt — Trap state</div>
+          <div class="concept-desc">Dead end. No escape. Instant reject.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATES SECTION -->
+    <section class="card" id="states">
+      <h2>State definitions</h2>
+      <table>
+        <thead>
+          <tr><th>State</th><th>Meaning</th><th>U</th><th>D</th><th>S</th><th>Accepts?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">q0</td><td>Start — nothing satisfied</td><td>✗</td><td>✗</td><td>✗</td><td class="no">No</td></tr>
+          <tr><td class="mono">q1</td><td>Has uppercase</td><td>✓</td><td>✗</td><td>✗</td><td class="no">No</td></tr>
+          <tr><td class="mono">q2</td><td>Has digit</td><td>✗</td><td>✓</td><td>✗</td><td class="no">No</td></tr>
+          <tr><td class="mono">q3</td><td>Has special char</td><td>✗</td><td>✗</td><td>✓</td><td class="no">No</td></tr>
+          <tr><td class="mono">q4</td><td>Has uppercase + digit</td><td>✓</td><td>✓</td><td>✗</td><td class="no">No</td></tr>
+          <tr><td class="mono">q5</td><td>Has uppercase + special</td><td>✓</td><td>✗</td><td>✓</td><td class="no">No</td></tr>
+          <tr><td class="mono">q6</td><td>Has digit + special</td><td>✗</td><td>✓</td><td>✓</td><td class="no">No</td></tr>
+          <tr><td class="mono">qacc</td><td>All three satisfied</td><td>✓</td><td>✓</td><td>✓</td><td class="yes">Yes*</td></tr>
+          <tr><td class="mono trap">qt</td><td>Trap — invalid char read</td><td>—</td><td>—</td><td>—</td><td class="no">No (forever)</td></tr>
+        </tbody>
+      </table>
+      <p class="footnote">* qacc only fully accepts if the password also meets the minimum length requirement, checked at the end.</p>
+    </section>
+
+    <!-- TRANSITION TABLE -->
+    <section class="card" id="transition">
+      <h2>Transition table (δ function)</h2>
+      <p>δ(current state, input type) → next state</p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th>State</th><th>uppercase</th><th>digit</th><th>special</th><th>lowercase</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono">q0</td><td>q1</td><td>q2</td><td>q3</td><td class="trap-cell">qt</td></tr>
+            <tr><td class="mono">q1</td><td>q1</td><td>q4</td><td>q5</td><td class="trap-cell">qt</td></tr>
+            <tr><td class="mono">q2</td><td>q4</td><td>q2</td><td>q6</td><td class="trap-cell">qt</td></tr>
+            <tr><td class="mono">q3</td><td>q5</td><td>q6</td><td>q3</td><td class="trap-cell">qt</td></tr>
+            <tr><td class="mono">q4</td><td>q4</td><td>q4</td><td>qacc</td><td class="trap-cell">qt</td></tr>
+            <tr><td class="mono">q5</td><td>q5</td><td>qacc</td><td>q5</td><td class="trap-cell">qt</td></tr>
+            <tr><td class="mono">q6</td><td>qacc</td><td>q6</td><td>q6</td><td class="trap-cell">qt</td></tr>
+            <tr><td class="mono">qacc</td><td>qacc</td><td>qacc</td><td>qacc</td><td>qacc</td></tr>
+            <tr><td class="mono trap">qt</td><td class="trap-cell">qt</td><td class="trap-cell">qt</td><td class="trap-cell">qt</td><td class="trap-cell">qt</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- STEP TRACE -->
+    <section class="card" id="trace">
+      <h2>Step-by-step trace</h2>
+      <p>Enter a password above and see how the DFA processes it character by character.</p>
+      <div id="trace-output" class="trace-box">
+        <span class="trace-idle">No input yet. Type a password to see the trace.</span>
+      </div>
+    </section>
+
+    <footer>
+      <p>Built for Automata Theory &amp; Formal Languages &middot; DFA Password Validator &middot; 2025</p>
+    </footer>
+
+  </main>
+
+  <script src="dfa.js"></script>
+</body>
+</html>
