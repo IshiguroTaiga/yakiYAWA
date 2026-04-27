@@ -164,19 +164,6 @@ Or drag `index.html` into your browser.
 
 ---
 
-## Concepts covered
-
-- Deterministic Finite Automata (DFA)
-- Formal definition: 5-tuple (Q, Σ, δ, q0, F)
-- State minimization — reducing equivalent states
-- State transitions and transition function δ
-- Self-loops and neutral input symbols
-- Accepting vs non-accepting states
-- Complete DFA (transition defined for every state-input pair)
-- Real-world application of formal language theory
-
----
-
 ## Built with
 
 Plain HTML, CSS, and JavaScript — no frameworks, no dependencies.
