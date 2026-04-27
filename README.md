@@ -183,4 +183,4 @@ Plain HTML, CSS, and JavaScript — no frameworks, no dependencies.
 
 ---
 
-*Automata Theory & Formal Languages — 2025*
+*IshiguroTaiga :3*
