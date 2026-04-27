@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DFA Password Validator</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
   <header>
     <div class="header-inner">
       <div class="badge">Automata Theory — DFA Project</div>
-      <h1>Password Validator</h1>
+      <h1><span>Password</span> Validator</h1>
       <p class="subtitle">A Deterministic Finite Automaton that validates passwords by reading each character and transitioning between states.</p>
     </div>
   </header>
@@ -39,17 +39,6 @@
           <span class="toggle-track"><span class="toggle-thumb"></span></span>
           <span class="rule-label">Special character</span>
         </label>
-        <label class="rule-toggle">
-          <input type="checkbox" id="r-len" checked>
-          <span class="toggle-track"><span class="toggle-thumb"></span></span>
-          <span class="rule-label">Min length</span>
-        </label>
-      </div>
-
-      <div class="len-row" id="len-row">
-        <span class="rule-label">Minimum length</span>
-        <input type="range" id="min-len" min="1" max="20" value="8">
-        <span id="len-val">8</span>
       </div>
 
       <div class="input-wrap">
@@ -62,7 +51,7 @@
         <div id="state-chips"></div>
       </div>
 
-      <div id="result-banner" class="banner banner-idle">waiting for input</div>
+      <div id="result-banner" class="banner banner-idle">awaiting input</div>
 
       <div class="checks" id="checks"></div>
     </section>
@@ -71,16 +60,16 @@
     <section class="card" id="how">
       <h2>How it works</h2>
       <p>A <strong>Deterministic Finite Automaton (DFA)</strong> is a mathematical model that reads an input string one character at a time and moves between a fixed set of states based on what it reads. At the end, it either accepts or rejects the input.</p>
-      <p>For this password validator, each <strong>state</strong> tracks which requirements have been satisfied so far. Reading a new character may move you to a new state if a new requirement is met.</p>
+      <p>This validator uses a <strong>minimized 5-state DFA</strong>. Each state tracks which category of requirements has been satisfied so far — uppercase seen, or digit/special seen — rather than tracking all combinations individually.</p>
 
       <div class="concept-grid">
         <div class="concept-box">
           <div class="concept-title">Q — States</div>
-          <div class="concept-desc">{ q0, q1, q2, q3, q4, q5, q6, qacc, qt }</div>
+          <div class="concept-desc">{ q0, q1, q2, q3, qacc } — 5 states total</div>
         </div>
         <div class="concept-box">
           <div class="concept-title">Σ — Alphabet</div>
-          <div class="concept-desc">All printable characters (uppercase, digit, special, lowercase)</div>
+          <div class="concept-desc">Uppercase (U), Digit (D), Special (S), Lowercase (L)</div>
         </div>
         <div class="concept-box">
           <div class="concept-title">δ — Transition</div>
@@ -92,11 +81,11 @@
         </div>
         <div class="concept-box">
           <div class="concept-title">qacc — Accept</div>
-          <div class="concept-desc">All 3 requirements met + length check.</div>
+          <div class="concept-desc">Both requirement groups met + length check.</div>
         </div>
         <div class="concept-box">
-          <div class="concept-title">qt — Trap state</div>
-          <div class="concept-desc">Dead end. No escape. Instant reject.</div>
+          <div class="concept-title">L — Neutral input</div>
+          <div class="concept-desc">Lowercase loops back. No penalty, no progress.</div>
         </div>
       </div>
     </section>
@@ -106,18 +95,14 @@
       <h2>State definitions</h2>
       <table>
         <thead>
-          <tr><th>State</th><th>Meaning</th><th>U</th><th>D</th><th>S</th><th>Accepts?</th></tr>
+          <tr><th>State</th><th>Meaning</th><th>Has U</th><th>Has D/S</th><th>Accepts?</th></tr>
         </thead>
         <tbody>
-          <tr><td class="mono">q0</td><td>Start — nothing satisfied</td><td>✗</td><td>✗</td><td>✗</td><td class="no">No</td></tr>
-          <tr><td class="mono">q1</td><td>Has uppercase</td><td>✓</td><td>✗</td><td>✗</td><td class="no">No</td></tr>
-          <tr><td class="mono">q2</td><td>Has digit</td><td>✗</td><td>✓</td><td>✗</td><td class="no">No</td></tr>
-          <tr><td class="mono">q3</td><td>Has special char</td><td>✗</td><td>✗</td><td>✓</td><td class="no">No</td></tr>
-          <tr><td class="mono">q4</td><td>Has uppercase + digit</td><td>✓</td><td>✓</td><td>✗</td><td class="no">No</td></tr>
-          <tr><td class="mono">q5</td><td>Has uppercase + special</td><td>✓</td><td>✗</td><td>✓</td><td class="no">No</td></tr>
-          <tr><td class="mono">q6</td><td>Has digit + special</td><td>✗</td><td>✓</td><td>✓</td><td class="no">No</td></tr>
-          <tr><td class="mono">qacc</td><td>All three satisfied</td><td>✓</td><td>✓</td><td>✓</td><td class="yes">Yes*</td></tr>
-          <tr><td class="mono trap">qt</td><td>Trap — invalid char read</td><td>—</td><td>—</td><td>—</td><td class="no">No (forever)</td></tr>
+          <tr><td class="mono">q0</td><td>Start — nothing satisfied</td><td>✗</td><td>✗</td><td class="no">No</td></tr>
+          <tr><td class="mono">q1</td><td>Has uppercase</td><td>✓</td><td>✗</td><td class="no">No</td></tr>
+          <tr><td class="mono">q2</td><td>Has digit or special</td><td>✗</td><td>✓</td><td class="no">No</td></tr>
+          <tr><td class="mono">q3</td><td>Has both — one step from accept</td><td>✓</td><td>✓</td><td class="no">No</td></tr>
+          <tr><td class="mono">qacc</td><td>All requirements satisfied</td><td>✓</td><td>✓</td><td class="yes">Yes*</td></tr>
         </tbody>
       </table>
       <p class="footnote">* qacc only fully accepts if the password also meets the minimum length requirement, checked at the end.</p>
@@ -126,22 +111,18 @@
     <!-- TRANSITION TABLE -->
     <section class="card" id="transition">
       <h2>Transition table (δ function)</h2>
-      <p>δ(current state, input type) → next state</p>
+      <p>δ(current state, input type) → next state &nbsp;|&nbsp; <em>italic</em> = self-loop</p>
       <div class="table-scroll">
         <table>
           <thead>
-            <tr><th>State</th><th>uppercase</th><th>digit</th><th>special</th><th>lowercase</th></tr>
+            <tr><th>State</th><th>uppercase (U)</th><th>digit (D)</th><th>special (S)</th><th>lowercase (L)</th></tr>
           </thead>
           <tbody>
-            <tr><td class="mono">q0</td><td>q1</td><td>q2</td><td>q3</td><td class="trap-cell">qt</td></tr>
-            <tr><td class="mono">q1</td><td>q1</td><td>q4</td><td>q5</td><td class="trap-cell">qt</td></tr>
-            <tr><td class="mono">q2</td><td>q4</td><td>q2</td><td>q6</td><td class="trap-cell">qt</td></tr>
-            <tr><td class="mono">q3</td><td>q5</td><td>q6</td><td>q3</td><td class="trap-cell">qt</td></tr>
-            <tr><td class="mono">q4</td><td>q4</td><td>q4</td><td>qacc</td><td class="trap-cell">qt</td></tr>
-            <tr><td class="mono">q5</td><td>q5</td><td>qacc</td><td>q5</td><td class="trap-cell">qt</td></tr>
-            <tr><td class="mono">q6</td><td>qacc</td><td>q6</td><td>q6</td><td class="trap-cell">qt</td></tr>
-            <tr><td class="mono">qacc</td><td>qacc</td><td>qacc</td><td>qacc</td><td>qacc</td></tr>
-            <tr><td class="mono trap">qt</td><td class="trap-cell">qt</td><td class="trap-cell">qt</td><td class="trap-cell">qt</td><td class="trap-cell">qt</td></tr>
+            <tr><td class="mono">q0</td><td>q1</td><td>q2</td><td>q2</td><td class="self">q0</td></tr>
+            <tr><td class="mono">q1</td><td class="self">q1</td><td>q3</td><td>q3</td><td class="self">q1</td></tr>
+            <tr><td class="mono">q2</td><td>q3</td><td class="self">q2</td><td class="self">q2</td><td>q3</td></tr>
+            <tr><td class="mono">q3</td><td>qacc</td><td>qacc</td><td>qacc</td><td>qacc</td></tr>
+            <tr><td class="mono">qacc</td><td class="self">qacc</td><td class="self">qacc</td><td class="self">qacc</td><td class="self">qacc</td></tr>
           </tbody>
         </table>
       </div>
