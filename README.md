@@ -10,8 +10,6 @@ Live demo → https://ishigurotaiga.github.io/yakiYAWA/
 
 This project demonstrates how a DFA can be applied to a real-world problem: validating passwords. Each character of the password is read one at a time, and the automaton transitions between states depending on the character type. At the end of the string, the final state determines whether the password is accepted or rejected.
 
-This version uses a **minimized 5-state DFA** — fewer states means faster execution and a simpler automaton, achieved by grouping equivalent requirement categories rather than tracking every combination individually.
-
 ---
 
 ## The automaton
@@ -37,13 +35,6 @@ A DFA is defined as a 5-tuple: **M = (Q, Σ, δ, q0, F)**
 | q2 | Has digit or special | ✗ | ✓ | No |
 | q3 | Has both — one step from accept | ✓ | ✓ | No |
 | q4 | All requirements satisfied | ✓ | ✓ | Yes |
-
-
-### Why 5 states instead of 8?
-
-The original design used 8 states (q0–q6, qacc) to individually track every combination of uppercase, digit, and special. The minimized version observes that **digit and special can be grouped** — both serve the same role in satisfying the "non-uppercase" requirement. This collapses q2+q3 into one state and q5+q6 into another, reducing the automaton from 8 states to 5 without changing what it accepts.
-
-Fewer states → fewer transitions → faster processing and a simpler, more elegant machine.
 
 ### Transition table (δ function)
 
@@ -102,16 +93,6 @@ open index.html
 ```
 
 Or drag `index.html` into your browser.
-
----
-
-## How to host on GitHub Pages
-
-1. Push this repo to GitHub
-2. Go to your repo → **Settings** → **Pages**
-3. Under "Branch", select `main` and folder `/ (root)`
-4. Click **Save**
-5. Your site will be live at `https://ishigurotaiga.github.io/yakiYAWA/`
 
 ---
 
