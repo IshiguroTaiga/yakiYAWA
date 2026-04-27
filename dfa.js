@@ -8,20 +8,20 @@
  *   q1   - has seen at least one uppercase (U path)
  *   q2   - has seen at least one digit or special (D/S path)
  *   q3   - intermediate: both paths have been crossed (needs final confirmation)
- *   qacc - all requirements met (accepting state, pending length check)
+ *   q4   - all requirements met (accepting state)
  *
  * ALPHABET (input classes):
  *   U = uppercase letter (A-Z)
  *   D = digit (0-9)
  *   S = special character (!@#$%^&*...)
- *   L = lowercase letter (a-z) → neutral, self-loop on all states
+ *   L = lowercase letter (a-z) → neutral, self-loop on most states
  *
  * TRANSITION SUMMARY:
- *   q0   + U/L → q1  |  q0 + D/S → q2
- *   q1   + U/L → q1  |  q1 + D/S → q3
- *   q2   + D/S → q2  |  q2 + U/L → q3
- *   q3   + any → qacc
- *   qacc + any → qacc (sink accept)
+ *   q0 + U/L → q1  |  q0 + D/S → q2
+ *   q1 + U/L → q1  |  q1 + D/S → q3
+ *   q2 + D/S → q2  |  q2 + U/L → q3
+ *   q3 + any → q4
+ *   q4 + any → q4  (sink accept)
  */
 
 const SPECIAL_CHARS = '!@#$%^&*()_+-=[]{}|;:,.<>?';
@@ -36,11 +36,11 @@ function classify(char) {
 
 // The DFA transition function: δ(state, inputType) → nextState
 const DELTA = {
-  q0:   { U: 'q1',   D: 'q2',   S: 'q2',   L: 'q0'   },
-  q1:   { U: 'q1',   D: 'q3',   S: 'q3',   L: 'q1'   },
-  q2:   { U: 'q3',   D: 'q2',   S: 'q2',   L: 'q3'   },
-  q3:   { U: 'qacc', D: 'qacc', S: 'qacc', L: 'qacc' },
-  qacc: { U: 'qacc', D: 'qacc', S: 'qacc', L: 'qacc' },
+  q0: { U: 'q1', D: 'q2', S: 'q2', L: 'q0' },
+  q1: { U: 'q1', D: 'q3', S: 'q3', L: 'q1' },
+  q2: { U: 'q3', D: 'q2', S: 'q2', L: 'q3' },
+  q3: { U: 'q4', D: 'q4', S: 'q4', L: 'q4' },
+  q4: { U: 'q4', D: 'q4', S: 'q4', L: 'q4' },
 };
 
 /**
@@ -58,12 +58,12 @@ function runDFA(password) {
     trace.push({ char, type, from: prev, to: state });
   }
 
-  const accepted = state === 'qacc';
+  const accepted = state === 'q4';
 
   // Derive which requirements are met from the final state
-  const hasUpper          = ['q1', 'q3', 'qacc'].includes(state) ||
+  const hasUpper          = ['q1', 'q3', 'q4'].includes(state) ||
                             trace.some(t => t.type === 'U');
-  const hasDigitOrSpecial = ['q2', 'q3', 'qacc'].includes(state) ||
+  const hasDigitOrSpecial = ['q2', 'q3', 'q4'].includes(state) ||
                             trace.some(t => t.type === 'D' || t.type === 'S');
 
   return {
@@ -133,10 +133,10 @@ function renderStateChips(result) {
   const s = result.finalState;
   const labels = [];
 
-  if (s === 'qacc') {
+  if (s === 'q4') {
     labels.push({ text: 'uppercase ✓', cls: 'active' });
     labels.push({ text: 'digit/special ✓', cls: 'active' });
-    labels.push({ text: 'qacc — accept', cls: 'accept' });
+    labels.push({ text: 'q4 — accept', cls: 'accept' });
   } else {
     const map = {
       q0: [],
@@ -209,7 +209,7 @@ function renderTrace(trace) {
 
   const typeNames = { U: 'uppercase', D: 'digit', S: 'special', L: 'lowercase' };
   traceOutput.innerHTML = trace.map((step, i) => {
-    const toClass = step.to === 'qacc' ? 'is-accept' : '';
+    const toClass = step.to === 'q4' ? 'is-accept' : '';
     const displayChar = step.char === ' ' ? '(space)' : step.char;
     return `<div class="trace-step">
       <span class="trace-char">${String(i + 1).padStart(2, '0')}: '${displayChar}'</span>
