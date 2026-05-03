@@ -1,23 +1,19 @@
 /**
  * DFA Password Validator
- * ======================
  * Implements a Deterministic Finite Automaton (DFA) for password validation.
- *
  * STATES:
- *   q0   - start state (no requirements met)
+ *   q0   - start state (no requirements met; lowercase self-loops here)
  *   q1   - has seen at least one uppercase (U path)
  *   q2   - has seen at least one digit or special (D/S path)
  *   q3   - intermediate: both paths have been crossed (needs final confirmation)
  *   q4   - all requirements met (accepting state)
- *
  * ALPHABET (input classes):
  *   U = uppercase letter (A-Z)
  *   D = digit (0-9)
  *   S = special character (!@#$%^&*...)
- *   L = lowercase letter (a-z) → neutral, self-loop on most states
- *
+ *   L = lowercase letter (a-z) → neutral, self-loops on q0, q1, q2, q4
  * TRANSITION SUMMARY:
- *   q0 + U/L → q1  |  q0 + D/S → q2
+ *   q0 + U → q1  |  q0 + D/S → q2  |  q0 + L → q0 (self-loop)
  *   q1 + U/L → q1  |  q1 + D/S → q3
  *   q2 + D/S → q2  |  q2 + U/L → q3
  *   q3 + any → q4
@@ -72,7 +68,6 @@ function runDFA(password) {
     accepted,
     hasUpper,
     hasDigitOrSpecial,
-    // Legacy compat for check rendering
     hasDigit:   trace.some(t => t.type === 'D'),
     hasSpecial: trace.some(t => t.type === 'S'),
   };
