@@ -59,7 +59,8 @@
     <!-- HOW IT WORKS SECTION -->
     <section class="card" id="how">
       <h2>How it works</h2>
-      <p>This validator uses a <strong>minimized 5 state DFA</strong>. Each state tracks which category of requirements has been satisfied so far uppercase seen, or digit/special seen rather than tracking all combinations individually.</p>
+      <p>A <strong>Deterministic Finite Automaton (DFA)</strong> is a mathematical model that reads an input string one character at a time and moves between a fixed set of states based on what it reads. At the end, it either accepts or rejects the input.</p>
+      <p>This validator uses a <strong>minimized 5-state DFA</strong>. Each state tracks which category of requirements has been satisfied so far — uppercase seen, or digit/special seen — rather than tracking all combinations individually.</p>
 
       <div class="concept-grid">
         <div class="concept-box">
@@ -84,7 +85,7 @@
         </div>
         <div class="concept-box">
           <div class="concept-title">L — Neutral input</div>
-          <div class="concept-desc">Lowercase loops back. No penalty, no progress.</div>
+          <div class="concept-desc">Lowercase self-loops at q0, q1, and q4. At q2 it advances to q3 (uppercase path). At q3 any input reaches q4.</div>
         </div>
       </div>
     </section>
@@ -137,7 +138,7 @@
     </section>
 
     <footer>
-      <p>IshiguroTaiga :3</p>
+      <p>Built for Automata Theory &amp; Formal Languages &middot; DFA Password Validator &middot; 2025</p>
     </footer>
 
   </main>
