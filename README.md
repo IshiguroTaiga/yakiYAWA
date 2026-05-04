@@ -43,7 +43,7 @@ Lowercase letters are **neutral** — they do not advance the DFA toward accepta
 δ(q3, L) = q4   (any input completes it)
 δ(q4, L) = q4   (sink accept — self-loop)
 ```
-This keeps the DFA **complete** while ensuring the automaton itself rejects passwords like `abc123` — they end at q2, not q4, because no uppercase was ever seen.
+This keeps the DFA **complete** while ensuring the automaton itself rejects passwords like `abc123` — they end at q2, not q4, because no uppercase was ever seen. Unlike my first diagram
 ---
 ## Features
 - Live validation as you type
