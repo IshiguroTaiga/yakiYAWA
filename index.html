@@ -137,6 +137,49 @@
       </div>
     </section>
 
+    <!-- LIVE DIAGRAM SECTION -->
+    <section class="card" id="live-diagram">
+      <h2>Live state diagram</h2>
+      <p>Watch the DFA move in real time as you type above. The active state glows and the last transition arrow is highlighted.</p>
+      <div class="diagram-wrap">
+        <svg id="dfa-svg" viewBox="0 0 660 340" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr-dim"    viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#3d3560" stroke-width="1.5" stroke-linecap="round"/></marker>
+            <marker id="arr-flash"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#6eb4ff" stroke-width="2"   stroke-linecap="round"/></marker>
+            <marker id="arr-accept" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#d4a8ff" stroke-width="2"   stroke-linecap="round"/></marker>
+            <filter id="glow-blue"   x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="glow-violet" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="glow-gold"   x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <line x1="14" y1="170" x2="54" y2="170" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <path id="e-q0-q0" d="M68 138 Q90 104 112 138"    fill="none" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <path id="e-q0-q1" d="M116 152 Q192 96  236 112"  fill="none" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <path id="e-q0-q2" d="M116 188 Q192 244 236 228"  fill="none" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <path id="e-q1-q1" d="M256 76  Q280 42  304 76"   fill="none" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <path id="e-q1-q3" d="M314 116 Q376 128 402 150"  fill="none" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <path id="e-q2-q2" d="M256 264 Q280 298 304 264"  fill="none" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <path id="e-q2-q3" d="M314 224 Q376 212 402 190"  fill="none" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <line id="e-q3-q4" x1="464" y1="170" x2="518" y2="170" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <path id="e-q4-q4" d="M534 138 Q556 104 578 138"  fill="none" stroke="#3d3560" stroke-width="1.5" marker-end="url(#arr-dim)"/>
+          <text class="diag-label" x="90"  y="96" >L</text>
+          <text class="diag-label" x="166" y="110">U</text>
+          <text class="diag-label" x="166" y="246">D,S</text>
+          <text class="diag-label" x="280" y="34" >U,L</text>
+          <text class="diag-label" x="362" y="122">D,S</text>
+          <text class="diag-label" x="280" y="314">D,S</text>
+          <text class="diag-label" x="362" y="228">U,L</text>
+          <text class="diag-label" x="491" y="158">U,L,D,S</text>
+          <text class="diag-label" x="556" y="96" >U,L,D,S</text>
+          <g id="node-q0"><circle cx="90"  cy="170" r="34" fill="#110e22" stroke="#3d3560" stroke-width="1.5"/><text class="diag-state" x="90"  y="166" text-anchor="middle" dominant-baseline="central">q0</text><text class="diag-sub" x="90"  y="183" text-anchor="middle">start</text></g>
+          <g id="node-q1"><circle cx="280" cy="100" r="34" fill="#110e22" stroke="#3d3560" stroke-width="1.5"/><text class="diag-state" x="280" y="96"  text-anchor="middle" dominant-baseline="central">q1</text><text class="diag-sub" x="280" y="113" text-anchor="middle">has U</text></g>
+          <g id="node-q2"><circle cx="280" cy="240" r="34" fill="#110e22" stroke="#3d3560" stroke-width="1.5"/><text class="diag-state" x="280" y="236" text-anchor="middle" dominant-baseline="central">q2</text><text class="diag-sub" x="280" y="253" text-anchor="middle">has D/S</text></g>
+          <g id="node-q3"><circle cx="430" cy="170" r="34" fill="#110e22" stroke="#3d3560" stroke-width="1.5"/><text class="diag-state" x="430" y="166" text-anchor="middle" dominant-baseline="central">q3</text><text class="diag-sub" x="430" y="183" text-anchor="middle">U+D/S</text></g>
+          <g id="node-q4"><circle cx="556" cy="170" r="34" fill="#110e22" stroke="#3d3560" stroke-width="1.5"/><circle cx="556" cy="170" r="27" fill="none" stroke="#3d3560" stroke-width="1"/><text class="diag-state" x="556" y="166" text-anchor="middle" dominant-baseline="central">q4</text><text class="diag-sub" x="556" y="183" text-anchor="middle">accept</text></g>
+          <text id="diag-char-label" x="330" y="176" text-anchor="middle" class="diag-char-display"></text>
+        </svg>
+      </div>
+    </section>
+
     <footer>
       <p>Built for Automata Theory &amp; Formal Languages &middot; DFA Password Validator &middot; 2025</p>
     </footer>
