@@ -408,3 +408,54 @@ footer {
   .card { padding: 1.25rem; }
   h1 { font-size: 2rem; }
 }
+/* ── LIVE DIAGRAM ─────────────────────────────────────────────────── */
+.diagram-wrap {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  overflow-x: auto;
+}
+#dfa-svg {
+  width: 100%;
+  min-width: 400px;
+  display: block;
+}
+.diag-state {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  fill: var(--muted);
+  pointer-events: none;
+}
+.diag-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  fill: var(--dim);
+  pointer-events: none;
+}
+.diag-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  fill: var(--dim);
+  pointer-events: none;
+  text-anchor: middle;
+}
+.diag-char-display {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  fill: var(--accent);
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+/* node states */
+.node-idle    circle:first-child { stroke: var(--dim);    }
+.node-active  circle:first-child { stroke: var(--violet); fill: var(--violet-g); filter: url(#glow-violet); }
+.node-accept  circle:first-child { stroke: var(--gold);   fill: var(--gold-g);   filter: url(#glow-gold);   }
+.node-active .diag-state { fill: var(--violet); }
+.node-accept .diag-state { fill: var(--gold); }
+.node-accept circle:nth-child(2) { stroke: var(--gold); }
+
+/* edge states */
+.edge-flash  { stroke: var(--accent)  !important; marker-end: url(#arr-flash)  !important; }
+.edge-accept { stroke: var(--gold)    !important; marker-end: url(#arr-accept) !important; }
