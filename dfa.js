@@ -1,17 +1,21 @@
 /**
  * DFA Password Validator
+ * ======================
  * Implements a Deterministic Finite Automaton (DFA) for password validation.
+ *
  * STATES:
  *   q0   - start state (no requirements met; lowercase self-loops here)
  *   q1   - has seen at least one uppercase (U path)
  *   q2   - has seen at least one digit or special (D/S path)
  *   q3   - intermediate: both paths have been crossed (needs final confirmation)
  *   q4   - all requirements met (accepting state)
+ *
  * ALPHABET (input classes):
  *   U = uppercase letter (A-Z)
  *   D = digit (0-9)
  *   S = special character (!@#$%^&*...)
  *   L = lowercase letter (a-z) → neutral, self-loops on q0, q1, q2, q4
+ *
  * TRANSITION SUMMARY:
  *   q0 + U → q1  |  q0 + D/S → q2  |  q0 + L → q0 (self-loop)
  *   q1 + U/L → q1  |  q1 + D/S → q3
@@ -68,6 +72,7 @@ function runDFA(password) {
     accepted,
     hasUpper,
     hasDigitOrSpecial,
+    // Legacy compat for check rendering
     hasDigit:   trace.some(t => t.type === 'D'),
     hasSpecial: trace.some(t => t.type === 'S'),
   };
@@ -113,6 +118,7 @@ function update() {
   renderBanner(result, useU, useD, useS);
   renderChecks(result, useU, useD, useS);
   renderTrace(result.trace);
+  renderDiagram(result.trace, result.finalState);
 }
 
 function renderIdle() {
@@ -121,6 +127,7 @@ function renderIdle() {
   resultBanner.textContent = 'awaiting input';
   checksEl.innerHTML = '';
   traceOutput.innerHTML = '<span class="trace-idle">No input yet. Type a password to see the trace.</span>';
+  resetDiagram();
 }
 
 function renderStateChips(result) {
@@ -221,3 +228,71 @@ function renderTrace(trace) {
 
 // Initialize
 renderIdle();
+// ─── Live Diagram ─────────────────────────────────────────────────
+
+// Maps each transition to its SVG edge element id
+const EDGE_MAP = {
+  'q0|q0': 'e-q0-q0',
+  'q0|q1': 'e-q0-q1',
+  'q0|q2': 'e-q0-q2',
+  'q1|q1': 'e-q1-q1',
+  'q1|q3': 'e-q1-q3',
+  'q2|q2': 'e-q2-q2',
+  'q2|q3': 'e-q2-q3',
+  'q3|q4': 'e-q3-q4',
+  'q4|q4': 'e-q4-q4',
+};
+
+const ALL_NODES = ['q0', 'q1', 'q2', 'q3', 'q4'];
+const ALL_EDGES = Object.values(EDGE_MAP);
+
+function renderDiagram(trace, finalState) {
+  // Reset all nodes
+  ALL_NODES.forEach(id => {
+    const el = document.getElementById('node-' + id);
+    if (el) el.className.baseVal = 'node-idle';
+  });
+  // Reset all edges
+  ALL_EDGES.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('edge-flash', 'edge-accept'); }
+  });
+
+  // Highlight current state node
+  const nodeEl = document.getElementById('node-' + finalState);
+  if (nodeEl) {
+    nodeEl.className.baseVal = finalState === 'q4' ? 'node-accept' : 'node-active';
+  }
+
+  // Highlight last transition edge
+  const charLabel = document.getElementById('diag-char-label');
+  if (trace.length > 0) {
+    const last = trace[trace.length - 1];
+    const edgeKey = last.from + '|' + last.to;
+    const edgeEl = document.getElementById(EDGE_MAP[edgeKey]);
+    if (edgeEl) {
+      edgeEl.classList.add(finalState === 'q4' ? 'edge-accept' : 'edge-flash');
+    }
+    // Show last char in centre
+    const display = last.char === ' ' ? '(sp)' : `'${last.char}'`;
+    if (charLabel) charLabel.textContent = display;
+  } else {
+    if (charLabel) charLabel.textContent = '';
+  }
+}
+
+function resetDiagram() {
+  ALL_NODES.forEach(id => {
+    const el = document.getElementById('node-' + id);
+    if (el) el.className.baseVal = 'node-idle';
+  });
+  ALL_EDGES.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('edge-flash', 'edge-accept'); }
+  });
+  // Highlight start state
+  const q0 = document.getElementById('node-q0');
+  if (q0) q0.className.baseVal = 'node-active';
+  const charLabel = document.getElementById('diag-char-label');
+  if (charLabel) charLabel.textContent = '';
+}
